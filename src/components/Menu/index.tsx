@@ -1,11 +1,27 @@
-import { HistoryIcon, HouseIcon, SettingsIcon, SunIcon } from "lucide-react";
+import {
+  HistoryIcon,
+  HouseIcon,
+  MoonIcon,
+  SettingsIcon,
+  SunIcon,
+} from "lucide-react";
 import styles from "./styles.module.css";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { Link } from "react-router";
 
 type AvailableThemes = "dark" | "light";
 
 export function Menu() {
-  const [theme, setTheme] = useState<AvailableThemes>("dark");
+  const [theme, setTheme] = useState<AvailableThemes>(() => {
+    const storageTheme =
+      (localStorage.getItem("theme") as AvailableThemes) || "dark";
+    return storageTheme;
+  });
+
+  const nextThemeIcon = {
+    dark: <SunIcon />,
+    light: <MoonIcon />,
+  };
 
   function handleThemeChange(
     e: React.MouseEvent<HTMLAnchorElement, MouseEvent>,
@@ -18,44 +34,49 @@ export function Menu() {
     });
   }
 
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme);
+    localStorage.setItem("theme", theme);
+  }, [theme]);
+
   return (
     <nav className={styles.menu}>
-      <a
+      <Link
         className={styles.menuLink}
-        href="#"
+        to="/"
         aria-label="Ir para a Home"
         title="Ir para a Home"
       >
         <HouseIcon />
-      </a>
+      </Link>
 
-      <a
+      <Link
         className={styles.menuLink}
-        href="#"
+        to="#"
         aria-label="Ver Histórico"
         title="Ver Histórico"
       >
         <HistoryIcon />
-      </a>
+      </Link>
 
-      <a
+      <Link
         className={styles.menuLink}
-        href="#"
+        to="#"
         aria-label="Configurações"
         title="Configurações"
       >
         <SettingsIcon />
-      </a>
+      </Link>
 
-      <a
+      <Link
         className={styles.menuLink}
-        href="#"
+        to="#"
         aria-label="Mudar Tema"
         title="Mudar Tema"
         onClick={handleThemeChange}
       >
-        <SunIcon />
-      </a>
+        {nextThemeIcon[theme]}
+      </Link>
     </nav>
   );
 }
